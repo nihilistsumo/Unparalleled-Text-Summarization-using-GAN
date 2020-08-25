@@ -451,10 +451,5 @@ class seq2seq2seq():
                     pred[j] = raw_pred[i][j][last_id] % self.vocab_size
                     last_id = int(raw_pred[i][j][last_id] / self.vocab_size)
                 result.write(self.utils.id2sent(pred) + '\n')
-                count += 1
-                if count>=1933:
-                    break
-            if count>=1933:
-                break
         print(np.mean(pp))
         print('finishing testing!!!!!')
