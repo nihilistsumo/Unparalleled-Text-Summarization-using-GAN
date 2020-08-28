@@ -430,15 +430,16 @@ class seq2seq2seq():
 
 
     def test(self):
-        result = open('result.txt','w')
+        result = open(self.result_path,'w')
         self.sess.run(tf.global_variables_initializer())
         gen_model_dir = os.path.join(self.model_dir,'generator/')
         self.generator_saver.restore(self.sess,tf.train.latest_checkpoint(gen_model_dir))
         print('loading model from',self.model_dir)
-        count = 0
         pp = []
-        max_len = len(open(self.input_path).readlines())
-        for x_batch in self.utils.test_data_generator(self.input_path):
+        input_count = len(open(self.input_path).readlines())
+        test_data_gen = self.utils.test_data_generator(self.input_path)
+        curr_line = 0
+        for x_batch in test_data_gen:
             feed_dict = {
                 self.source_sentence:x_batch
             }
@@ -451,5 +452,10 @@ class seq2seq2seq():
                     pred[j] = raw_pred[i][j][last_id] % self.vocab_size
                     last_id = int(raw_pred[i][j][last_id] / self.vocab_size)
                 result.write(self.utils.id2sent(pred) + '\n')
+                curr_line += 1
+                if curr_line == input_count:
+                    break
+            if curr_line == input_count:
+                break
         print(np.mean(pp))
         print('finishing testing!!!!!')
